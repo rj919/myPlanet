@@ -1,5 +1,5 @@
 # myPlanet
-_A Job Scheduler using Flask & APScheduler on Alpine & Gunicorn inside Docker_  
+_An Air Quality Monitoring Bot using Planet OS_  
 **by [Collective Acuity](https://collectiveacuity.com)**
 
 ## Components

@@ -64,6 +64,7 @@ def monitor_telegram(telegram_config, update_path):
         'access_token': telegram_config['telegram_access_token'],
         'bot_id': telegram_config['telegram_bot_id']
     }
+    admin_id = 'telegram_%s' % telegram_config['telegram_admin_id']
     telegram_client = telegramBotClient(**init_kwargs)
     from labpack.records.settings import load_settings, save_settings
     update_record = load_settings(update_path)
@@ -88,11 +89,12 @@ def monitor_telegram(telegram_config, update_path):
                 break
         if keyword_found:
             context_details = {}
-            location_data = retrieve_location_data(contact_id)
-            context_details.update(location_data)
-            planet_data = retrieve_planet_data(contact_id)
-            context_details.update(planet_data)
-            telegram_client.send_message(user_id, str(context_details))
+            if contact_id == admin_id:
+                location_data = retrieve_location_data(contact_id)
+                context_details.update(location_data)
+                planet_data = retrieve_planet_data(contact_id)
+                context_details.update(planet_data)
+                telegram_client.send_message(user_id, str(context_details))
 
     return True
 
@@ -157,3 +159,4 @@ if __name__ == '__main__':
     # monitor_moves(token_config['access_token'], token_config['service_scope'], token_config['contact_id'])
     # monitor_planetos(planetos_config, token_config['contact_id'])
     # planet_data = retrieve_planet_data(token_config['contact_id'])
+    # print(telegram_config)

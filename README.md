@@ -1,4 +1,4 @@
-# flaskScheduler 
+# myPlanet
 _A Job Scheduler using Flask & APScheduler on Alpine & Gunicorn inside Docker_  
 **by [Collective Acuity](https://collectiveacuity.com)**
 

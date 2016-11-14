@@ -1,4 +1,4 @@
-repo_remote_url: https://bitbucket.org/collectiveacuity/flaskscheduler
+repo_remote_url: https://github.com/rj919/myPlanet
 docker_virtualbox_name: default
 docker_container_alias: scheduler
 docker_image_name: collectiveacuity/flaskscheduler

@@ -87,9 +87,24 @@ scheduler_settings = ingest_environ('models/scheduler-model.json')
 scheduler_configuration = config_scheduler(scheduler_settings)
 app.config.update(**scheduler_configuration)
 
+# construct startup jobs
+from time import time
+from datetime import datetime
+job_kwargs = {
+    'id': 'test.job.%s' % str(time()),
+    'func': 'launch:app.logger.debug',
+    'kwargs': { 'msg': 'test job' },
+    'misfire_grace_time': 5,
+    'run_date': datetime.utcfromtimestamp(time() + 5).isoformat(),
+    'max_instances': 1,
+    'replace_existing': False,
+    'coalesce': True
+}
+
 # attach app to scheduler and start scheduler
 ap_scheduler.init_app(app)
 ap_scheduler.start()
+ap_scheduler.add_job(**job_kwargs)
 
 # initialize test wsgi localhost server with default memory job store
 if __name__ == '__main__':

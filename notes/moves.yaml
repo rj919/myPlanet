@@ -1,0 +1,10 @@
+moves_client_id: 'KX___vx'
+moves_client_secret: '83__n9'
+moves_app_name: 'my App'
+moves_developer_name: 'my Team'
+moves_redirect_uri: 'https://mycallback.mywebsite.me/authorize/moves'
+moves_authorize_url: 'https://api.moves-app.com/oauth/v1/authorize'
+moves_service_name: 'moves'
+moves_service_scope: 'activity location'
+moves_response_type: 'code'
+

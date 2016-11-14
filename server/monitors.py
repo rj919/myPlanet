@@ -90,11 +90,16 @@ def monitor_telegram(telegram_config, update_path):
         if keyword_found:
             context_details = {}
             if contact_id == admin_id:
+                message = ''
                 location_data = retrieve_location_data(contact_id)
                 context_details.update(location_data)
                 planet_data = retrieve_planet_data(contact_id)
                 context_details.update(planet_data)
-                telegram_client.send_message(user_id, str(context_details))
+                for key, value in context_details.items():
+                    if message:
+                        message += '\n'
+                    message += '%s: %s' % (key.capitalize(), str(value))
+                telegram_client.send_message(user_id, message)
 
     return True
 

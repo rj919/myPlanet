@@ -196,7 +196,7 @@ def config_scheduler(scheduler_settings=None):
 if __name__ == '__main__':
     import os
     os.environ['scheduler_job_store_pass'] = 'test_pass'
-    model_path = 'models/settings_model.json'
+    model_path = 'models/scheduler-model.json'
     settings_model = load_settings(model_path)
     assert settings_model['schema']['scheduler_job_store_user'] == 'postgres'
     env_settings = ingest_environ(model_path)

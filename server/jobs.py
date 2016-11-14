@@ -24,32 +24,31 @@ job_list = [
         'id': 'telegram.monitor.%s' % str(time()),
         'function': 'launch:monitor_telegram',
         'kwargs': { 'telegram_config': telegram_config, 'update_path': update_path },
-        'interval': 2,
-        'end': time() + 60 * 120
+        'interval': 2
     },
     {
         'id': 'moves.monitor.%s' % str(time()),
         'function': 'launch:monitor_moves',
         'kwargs': { 'access_token': token_config['access_token'], 'service_scope': token_config['service_scope'], 'contact_id': token_config['contact_id'] },
         'interval': 60 * 5,
-        'end': time() + 60 * 120
+        'start': time() + 5
     },
     {
         'id': 'planetos.monitor.%s' % str(time()),
         'function': 'launch:monitor_planetos',
         'kwargs': { 'planetos_config': planetos_config, 'contact_id': token_config['contact_id'] },
-        'interval': 60 * 5,
-        'end': time() + 60 * 120
+        'interval': 60 * 30,
+        'start': time() + 10
     },
     {
         'id': 'unittest.%s' % str(time()),
         'function': 'launch:app.logger.debug',
-        'kwargs': { 'msg': 'Jobs completed.' },
-        'dt': time() + 60 * 120 + 1
+        'kwargs': { 'msg': 'Jobs are running...' },
+        'interval': 60 * 2
     }
 ]
 
-if __name__ == '__main__':
+def add_jobs(job_list):
     scheduler_url = 'http://localhost:5001'
     from labpack.platforms.apscheduler import apschedulerClient
     scheduler_client = apschedulerClient(scheduler_url)
@@ -63,3 +62,6 @@ if __name__ == '__main__':
             response = scheduler_client.add_date_job(**job)
             if 'error_message' in response.keys():
                 print(response['error_message'])
+
+if __name__ == '__main__':
+    add_jobs(job_list)

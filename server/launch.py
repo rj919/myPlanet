@@ -2,50 +2,9 @@ __author__ = 'rcj1492'
 __created__ = '2015.10'
 __license__ = 'MIT'
 
-'''
-Dependencies
-pip install apscheduler
-pip install requests
-pip install flask
-pip install gevent
-pip install gunicorn
-pip install Flask-APScheduler
-pip install sqlalchemy
-pip install psycopg2
-pip install jsonmodel
-pip install labpack
-'''
-
-'''
-APScheduler Documentation
-https://apscheduler.readthedocs.io/en/latest/index.html
-
-APScheduler Trigger Methods
-https://apscheduler.readthedocs.io/en/latest/modules/triggers/date.html
-https://apscheduler.readthedocs.io/en/latest/modules/triggers/cron.html
-https://apscheduler.readthedocs.io/en/latest/modules/triggers/interval.html
-
-Flask_APScheduler Documentation
-https://github.com/viniciuschiele/flask-apscheduler
-
-Flask Documentation
-http://flask.pocoo.org/docs/0.11/deploying/wsgi-standalone/#gevent
-'''
-
-# create init path to sibling folders
-import os
-import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-
-# construct flask app object
-from flask import Flask, request, session, jsonify, url_for, render_template
-app = Flask(import_name=__name__)
-
-# initialize logging and debugging
-import logging
-app.logger.addHandler(logging.StreamHandler(sys.stdout))
-app.logger.setLevel(logging.DEBUG)
-app.config['ASSETS_DEBUG'] = False
+# initialize app and scheduler objects
+from server.init import app, ap_scheduler
+from flask import request, session, jsonify, url_for, render_template
 
 # construct the landing page
 from labpack.records.settings import load_settings
@@ -59,52 +18,42 @@ def landing_page():
 def page_not_found(error):
     return render_template('404.html'), 404
 
-# add requests module to namespace
-import requests
-from server.utils import handle_request_wrapper
-handle_request = handle_request_wrapper(app)
-
-# add monitors to namespace
-from server.monitors import monitor_moves, monitor_planetos, monitor_telegram
-
-# add configs to namespace
-telegram_config = load_settings('../cred/telegram.yaml')
-moves_config = load_settings('../cred/moves.yaml')
-planetos_config = load_settings('../cred/planetos.yaml')
-token_config = load_settings('../data/moves-token.yaml')
-update_path = '../data/telegram-update.yaml'
-
-# construct scheduler object (with gevent processor)
-from flask_apscheduler import APScheduler
-from apscheduler.schedulers.gevent import GeventScheduler
-gevent_scheduler = GeventScheduler()
-ap_scheduler = APScheduler(scheduler=gevent_scheduler)
-
-# adjust scheduler configuration settings
-from server.utils import config_scheduler
-from labpack.records.settings import ingest_environ
-scheduler_settings = ingest_environ('models/scheduler-model.json')
-scheduler_configuration = config_scheduler(scheduler_settings)
-app.config.update(**scheduler_configuration)
-
-# construct startup jobs
-from time import time
-from datetime import datetime
-job_kwargs = {
-    'id': 'test.job.%s' % str(time()),
-    'func': 'launch:app.logger.debug',
-    'kwargs': { 'msg': 'test job' },
-    'misfire_grace_time': 5,
-    'run_date': datetime.utcfromtimestamp(time() + 5).isoformat(),
-    'max_instances': 1,
-    'replace_existing': False,
-    'coalesce': True
+# construct scheduler configs
+scheduler_configs = {
+    'SCHEDULER_JOBS': [ {
+        'id': 'app.logger.debug.start',
+        'func': 'init:app.logger.debug',
+        'kwargs': { 'msg': 'APScheduler has started.' },
+        'misfire_grace_time': 5,
+        'max_instances': 1,
+        'replace_existing': True,
+        'coalesce': True
+    } ],
+    'SCHEDULER_TIMEZONE': 'UTC',
+    'SCHEDULER_VIEWS_ENABLED': True
 }
+
+# add jobs to pre-scheduled jobs
+from server.jobs import job_list
+from labpack.platforms.apscheduler import apschedulerClient
+scheduler_client = apschedulerClient('http://localhost:5001')
+for job in job_list:
+    job_fields = scheduler_client._construct_fields(**job)
+    standard_fields = {
+        'misfire_grace_time': 5,
+        'max_instances': 1,
+        'replace_existing': True,
+        'coalesce': True
+    }
+    job_fields.update(**standard_fields)
+    scheduler_configs['SCHEDULER_JOBS'].append(job_fields)
+
+# add scheduler configurations to app configs
+app.config.update(**scheduler_configs)
 
 # attach app to scheduler and start scheduler
 ap_scheduler.init_app(app)
 ap_scheduler.start()
-ap_scheduler.add_job(**job_kwargs)
 
 # initialize test wsgi localhost server with default memory job store
 if __name__ == '__main__':

@@ -6,7 +6,10 @@ _An Air Quality Monitoring Bot for Expedition 2016 using Planet OS_
 - Collects personal location and air quality data every hour
 - Message "air" to bot returns air quality data at current location
 - Ready to deploy to a docker container
-- **Requires Valid Moves Access Token**
+
+## Requirements
+- Python dependencies listed in Dockerfile
+- **Valid OAuth2 access token from Moves App**
 
 ## Components
 - Alpine Edge (OS)

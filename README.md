@@ -10,6 +10,7 @@ _An Air Quality Monitoring Bot for Expedition 2016 using Planet OS_
 ## Requirements
 - Python dependencies listed in Dockerfile
 - **Valid OAuth2 access token from Moves App**
+- Valid credentials for Planet OS and Telegram Bot API
 
 ## Components
 - Alpine Edge (OS)

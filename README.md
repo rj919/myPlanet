@@ -1,6 +1,6 @@
 # myPlanet
 _An Air Quality Monitoring Bot for Expedition 2016 using Planet OS_  
-**by [Collective Acuity](https://collectiveacuity.com)**
+**by [Collective Acuity](http://collectiveacuity.com)**
 
 ## Features
 - Collects personal location and air quality data every hour

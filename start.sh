@@ -1,6 +1,6 @@
 # Set Docker Variables
 VIRTUALBOX_NAME=default
-APP_CONTAINER_ALIAS=myplanet
+APP_CONTAINER_ALIAS=planet
 APP_DOCKER_IMAGE=collectiveacuity/flaskscheduler
 APP_RUN_COMMAND="gunicorn --chdir server -w 1 launch:app -b 0.0.0.0:5000 -k gevent"
 # APP_RUN_COMMAND="sh"

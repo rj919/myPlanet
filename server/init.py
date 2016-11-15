@@ -33,16 +33,12 @@ Flask Documentation
 http://flask.pocoo.org/docs/0.11/deploying/wsgi-standalone/#gevent
 '''
 
-# create init path to sibling folders
-# import os
-import sys
-# sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-
 # construct flask app object
 from flask import Flask
 app = Flask(import_name=__name__)
 
 # initialize logging and debugging
+import sys
 import logging
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.DEBUG)
